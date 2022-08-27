@@ -1,3 +1,7 @@
+from audioop import cross
+import random
+import matplotlib.pyplot as plt
+
 def evaluate(individual):
     """
     Recebe um indivíduo (lista de inteiros) e retorna o número de ataques
@@ -27,7 +31,6 @@ def evaluate(individual):
             if column_attacked not in checked_columns:
                 num_attacks+=1
         checked_columns.append(column)
-    print(num_attacks)
     return num_attacks
 
 def get_columns_attacked(my_column, my_pos,individual):
@@ -54,7 +57,13 @@ def is_in_bounds(cell):
             return False
     return True
 
-    
+def selection(k,population):
+    parents = [None,None]
+    for i in range(2):
+        participants = random.choices(population=population,k=k)    
+        parents[i] = tournament(participants)
+    return parents[0],parents[1]
+
 def tournament(participants):
     """
     Recebe uma lista com vários indivíduos e retorna o melhor deles, com relação
@@ -62,8 +71,8 @@ def tournament(participants):
     :param participants:list - lista de individuos
     :return:list melhor individuo da lista recebida
     """
-    raise NotImplementedError  # substituir pelo seu codigo
-
+    top_participant = top(1,participants)            
+    return top_participant[0]
 
 def crossover(parent1, parent2, index):
     """
@@ -78,9 +87,24 @@ def crossover(parent1, parent2, index):
     :param parent2:list
     :param index:int
     :return:list,list
-    """
-    raise NotImplementedError  # substituir pelo seu codigo
-
+    """        
+    #talvez fazer em um loop só dps, mas por enquanto ta bom
+    cutPoint = index
+    parent = parent1
+    offspring1 = []
+    for i in range(len(parent)):
+        if i == cutPoint:
+            parent = parent2 #swap from which parent take genes
+        offspring1.append(parent[i])
+        
+    parent = parent2
+    offspring2 = []
+    for i in range(len(parent)):
+        if i == cutPoint:
+            parent = parent1 #swap from which parent take genes
+        offspring2.append(parent[i])
+   
+    return offspring1,offspring2
 
 def mutate(individual, m):
     """
@@ -91,7 +115,15 @@ def mutate(individual, m):
     :param m:int - probabilidade de mutacao
     :return:list - individuo apos mutacao (ou intacto, caso a prob. de mutacao nao seja satisfeita)
     """
-    raise NotImplementedError  # substituir pelo seu codigo
+    domain  = [1,2,3,4,5,6,7,8]
+    if random.random() < m:
+        geneToMutate = random.randint(0,len(individual)-1)
+        gene = individual[geneToMutate]
+        domain.remove(gene) #remove current gene value from the choices
+        mutation = random.choice(domain)
+        individual[geneToMutate] = mutation
+    return individual
+    
 
 
 def run_ga(g, n, k, m, e):
@@ -104,4 +136,86 @@ def run_ga(g, n, k, m, e):
     :param e:bool - se vai haver elitismo
     :return:list - melhor individuo encontrado
     """
-    raise NotImplementedError  # substituir pelo seu codigo
+    """
+        n: numero de individuos
+        g: numero de gerações
+        f: funcao de aptidao que quero maximizar/minimizar
+        #no nosso caso f seria rodar sintese e utilizar alguma forma de analisar (seja pareto, seja alguma metrica individual, seja minimizar latXresources)
+        #o1,o2 = offspring1 offspring2
+        P<-aleatorios(n)
+        repetir g vezes:
+            se houver elitismo:
+                P' <- top(k,P)
+            senao:
+                P' <-  Vazio
+            enquanto tam(P')<n:
+                pai1,pai2 <- selecao(P)
+                o1,o2 <- crossover(pai1,pai2)
+                o1 <- mutation(o1)
+                o2 <- mutation(o2)
+                P' <- P'  U {o1,o2}
+        P <- P'
+        retornar top(x,P,f) #top x individuos de P
+    """
+    max_conflicts = []
+    min_conflicts = []
+    avg_conflicts = []
+    population = random_sample(n)
+    for i in range(g):
+        if e:
+            new_population = top(1,population)
+        else:
+            new_population = []
+        while len(new_population) < n:
+            parent1,parent2 = selection(k,population)
+            offspring1,offspring2 = crossover(parent1,parent2,3)
+            offspring1 = mutate(offspring1,m)
+            offspring2 = mutate(offspring2,m)
+            new_population.append(offspring1)
+            new_population.append(offspring2)
+        population = new_population
+        evaluations = [evaluate(individual) for individual in population]
+        max_conflicts.append(max(evaluations)) 
+        min_conflicts.append(min(evaluations))
+        avg_conflicts.append(sum(evaluations) / len(evaluations))
+    plot(max_conflicts,min_conflicts,avg_conflicts)
+    return top(1,population)
+def plot(max_conflicts,min_conflicts,avg_conflicts):
+    pass
+
+def top(k,population):
+    """
+    get top k individuals of population
+    """
+    top_individuals = [] #top k individuals
+    for count,individual in enumerate(population):
+        top_individuals.append(individual) 
+        if count >= k:
+            remove_worst_solution(top_individuals)
+    return top_individuals
+
+def remove_worst_solution(top_individuals):
+    
+    worst = float('-inf') #maior numero é pior
+    for index,individual in enumerate(top_individuals):
+        num_attakcs = evaluate(individual)
+        if num_attakcs > worst:
+            worst = num_attakcs
+            worst_individual_index = index
+    top_individuals.pop(worst_individual_index)
+
+def random_sample(n):
+    sample = []
+    for i in range(n):
+        one_individual = generate_random_individual()
+        sample.append(one_individual)
+    
+    return sample
+
+def generate_random_individual():
+    domain =  [1,2,3,4,5,6,7,8]
+    individual = []
+    for i in range(len(domain)):
+        individual.append(random.choice(domain))
+    return individual  
+
