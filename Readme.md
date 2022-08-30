@@ -4,11 +4,11 @@ NÍKOLAS PADÃO SCHUSTER - 00323741 - Turma: A
 
 A única biblioteca necessária para ser instalada no python3 é a matplotlib
 
-##################################################################################################################
+####################################################
 Problema 1:
 
 
-##################################################################################################################
+####################################################
 Problema 2:
 Ao meu ver os valores dos thetas que melhor resultam na melhor execução, tem valores próximos de um valor após muitas execuções com um valor qualquer. Assim, escolho os seguites valores após 10000 execuções com thetas iniciais iguais a 0:
 theta_0: 3.9999999999999947
