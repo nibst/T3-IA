@@ -156,6 +156,7 @@ def run_ga(g, n, k, m, e):
     max_conflicts = []
     min_conflicts = []
     avg_conflicts = []
+    random.seed(1)
     population = random_sample(n)
     for i in range(g):
         if e:
@@ -174,7 +175,7 @@ def run_ga(g, n, k, m, e):
         max_conflicts.append(max(evaluations)) 
         min_conflicts.append(min(evaluations))
         avg_conflicts.append(sum(evaluations) / len(evaluations))
-    plot(max_conflicts,min_conflicts,avg_conflicts)
+    #plot(max_conflicts,min_conflicts,avg_conflicts)
     return top(1,population)
 
 def plot(max_conflicts,min_conflicts,avg_conflicts):

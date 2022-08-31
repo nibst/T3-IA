@@ -4,6 +4,12 @@ NÍKOLAS PADÃO SCHUSTER - 00323741 - Turma: A
 
 A única biblioteca necessária para ser instalada no python3 é a matplotlib
 
+Eight Queens:
+-------------
+Valores utilizados para encontrar o gráfico no arquivo ga.png: `args=(100, 40, 2, 0.3, 1)`. Para executar o algoritmo e obter o gráfico, basta chamar a função run_ga com os valores ditos acima e descomentar a linha 178 do arquivo eight_queens.py, em que está escrito `#plot(max_conflicts,min_conflicts,avg_conflicts)`
+Além das funções auxiliares, foi feita a função `selection(k,population)` que basicamente chama duas vezes o `tournament`, dessa forma gerando dois parents
+
+
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 Problema 1:
 
