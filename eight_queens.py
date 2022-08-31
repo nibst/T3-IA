@@ -1,4 +1,5 @@
 from audioop import cross
+from cProfile import label
 import random
 import matplotlib.pyplot as plt
 
@@ -137,11 +138,6 @@ def run_ga(g, n, k, m, e):
     :return:list - melhor individuo encontrado
     """
     """
-        n: numero de individuos
-        g: numero de gerações
-        f: funcao de aptidao que quero maximizar/minimizar
-        #no nosso caso f seria rodar sintese e utilizar alguma forma de analisar (seja pareto, seja alguma metrica individual, seja minimizar latXresources)
-        #o1,o2 = offspring1 offspring2
         P<-aleatorios(n)
         repetir g vezes:
             se houver elitismo:
@@ -163,7 +159,7 @@ def run_ga(g, n, k, m, e):
     population = random_sample(n)
     for i in range(g):
         if e:
-            new_population = top(1,population)
+            new_population = top(e,population)
         else:
             new_population = []
         while len(new_population) < n:
@@ -180,8 +176,20 @@ def run_ga(g, n, k, m, e):
         avg_conflicts.append(sum(evaluations) / len(evaluations))
     plot(max_conflicts,min_conflicts,avg_conflicts)
     return top(1,population)
+
 def plot(max_conflicts,min_conflicts,avg_conflicts):
-    pass
+    plt.figure(figsize=(6, 2))
+    plt.plot(max_conflicts,label='max conflicts')
+    plt.plot(avg_conflicts,label='avg conflicts')
+    plt.plot(min_conflicts,label='min conflicts')
+    plt.xlabel('generations')
+    plt.ylabel('fitness score')
+    plt.title('Genetic run')
+    plt.legend()
+
+    #plt.legend(['Max Conflicts', line1, 'Avg Confclits', line2, 'Min Conflicts', line3])
+    plt.show()
+    
 
 def top(k,population):
     """
